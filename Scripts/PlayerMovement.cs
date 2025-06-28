@@ -82,11 +82,6 @@ public class PlayerMovement : MonoBehaviour
             wallJumpCooldown = 0;
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-
-    }
     private bool isGrounded()
     {
         // Check if the player is grounded by casting a ray downwards
@@ -98,5 +93,11 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, new Vector2(transform.localScale.x, 0), 0.1f, wallLayer);
         return raycastHit.collider != null;
+    }
+
+    public bool canAttack()
+    {
+        // The player can attack if they are not moving horizontally, are grounded, and not on a wall
+        return horizontalInput == 0 && isGrounded() && !onWall();
     }
 }
