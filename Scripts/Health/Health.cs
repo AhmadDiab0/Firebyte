@@ -64,6 +64,23 @@ public class Health : MonoBehaviour
         // Optionally, you can trigger a health increase animation or effect here
     }
 
+    public void Respawn()
+    {
+        dead = false;
+        IncreaseHealth(startingHealth);
+        anim.ResetTrigger("die");
+        anim.Play("idle");
+        StartCoroutine(Invunerability()); // Start invulnerability frames on respawn
+
+        // Get all Behaviour components attached to this GameObject (except this Health script)
+        Behaviour[] components = GetComponents<Behaviour>();
+        foreach (Behaviour component in components)
+        {
+            if (component != this)
+                component.enabled = true; // Re-enable all components except Health itself
+        }
+    }
+
     private IEnumerator Invunerability()
     {
         Physics2D.IgnoreLayerCollision(8, 9, true); // Ignore collisions between player and enemies
