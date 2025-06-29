@@ -13,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D boxCollider;
     private float wallJumpCooldown;
     private float horizontalInput;
+
+    [Header("SFX")]
+    [SerializeField] private AudioClip jumpSound; // optional: sound effect for jump
     private void Awake()
     {
         // Refrence the Rigidbody2D and Animator components
@@ -54,7 +57,14 @@ public class PlayerMovement : MonoBehaviour
                 body.gravityScale = 3;
             // Check for jump input
             if (Input.GetKeyDown(KeyCode.Space))
+            {
                 jump();
+
+                if(Input.GetKeyDown(KeyCode.Space) && isGrounded())
+                    SoundManager.instance.PlaySound(jumpSound); // Play jump sound if set
+
+
+            }
 
         }
         else

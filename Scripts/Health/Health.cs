@@ -13,6 +13,9 @@ public class Health : MonoBehaviour
     [Header("iFrames")]
     [SerializeField] private float iFramesDuration;
     [SerializeField] private int numberOffFlashes;
+
+    [SerializeField] private AudioClip deathSound; // optional: sound effect for death
+    [SerializeField] private AudioClip hurtSound; // optional: sound effect for hurt
     private SpriteRenderer spriteRend;
 
     private void Awake()
@@ -25,18 +28,33 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(float _damage)
     {
-        currentHealth = Mathf.Clamp(currentHealth - _damage, 0, startingHealth);
+        if (currentHealth <= 0) return;
+
+        currentHealth -= _damage;
+
         if (currentHealth > 0)
         {
             anim.SetTrigger("hurt");
             StartCoroutine(Invunerability()); // Start invulnerability frames
+            SoundManager.instance.PlaySound(hurtSound); // Play hurt sound if set
         }
         else
         {
             if (!dead)
+            {
+                dead = true;
+                // If this is an enemy, call its Die() method
+                MeleeEnemy meleeEnemy = GetComponent<MeleeEnemy>();
+                if (meleeEnemy != null)
+                    meleeEnemy.Die();
+
                 anim.SetTrigger("die");
-            GetComponent<PlayerMovement>().enabled = false; // Disable player movement on death
-            dead = true;
+                var playerMovement = GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                    playerMovement.enabled = false; // Disable player movement on death
+
+                SoundManager.instance.PlaySound(deathSound); // Play death sound if set
+            }
         }
     }
 
